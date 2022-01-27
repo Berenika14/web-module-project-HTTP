@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 import axios from "axios";
 
-const EditMovieForm = (props) => {
+const AddMovieForm = (props) => {
   const { push } = useHistory();
-  const { id } = useParams();
 
-  const { setMovies } = props;
   const [movie, setMovie] = useState({
     title: "",
     director: "",
@@ -16,18 +14,6 @@ const EditMovieForm = (props) => {
     metascore: 0,
     description: "",
   });
-
-  useEffect(() => {
-    axios
-      .get(`http://localhost:9000/api/movies/${id}`)
-      .then((resp) => {
-        console.log(resp);
-        setMovie(resp.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   const handleChange = (e) => {
     setMovie({
@@ -39,25 +25,24 @@ const EditMovieForm = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .put(`http://localhost:9000/api/movies/${id}`, movie)
-      .then((res) => {
-        props.updateMovies(res.data);
-        push(`/movies/${movie.id}`);
+      .post("http://localhost:9000/api/movies", movie)
+      .then((resp) => {
+        console.log(resp);
+        props.updateMovies(resp.data);
+        push("/movies");
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
   const { title, director, genre, metascore, description } = movie;
-
   return (
     <div className="col">
       <div className="modal-content">
         <form onSubmit={handleSubmit}>
           <div className="modal-header">
             <h4 className="modal-title">
-              Editing <strong>{movie.title}</strong>
+              Adding <strong>{movie.title}</strong>
             </h4>
           </div>
           <div className="modal-body">
@@ -123,4 +108,4 @@ const EditMovieForm = (props) => {
   );
 };
 
-export default EditMovieForm;
+export default AddMovieForm;
